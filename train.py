@@ -24,9 +24,9 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
     early_stopping = EarlyStopping(patience=patience,verbose=True)
 
     for epoch in range(1,epoch_sum+1):
-        # ============训练模式==============
-        model.train()  # 将模型改为训练模式
-        # 每次迭代都是处理一个mini-Batch
+        # ============training mode==============
+        model.train()  # 
+        # mini-Batch
         for i, data in enumerate(train_loader,1):
             inputs, labels = data
             labels = torch.tensor(labels,dtype=torch.float32).view(-1,1)
@@ -39,18 +39,18 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
             optimizer.step()
             train_losses.append(batch_loss.item())
 
-        # 4.2=======================每次进行完一个训练迭代， 就去测试一把看看此时的效果=====================
-        # 在测试集上检验效果
-        model.eval() # 将模型改为预测模式
+        # ============================================
+        # validation mode mode
+        model.eval() 
 
-        # 每次迭代处理一个mini_batch
+        # mini_batch
         for j, v_data in enumerate(val_loader):
             inputs, labels = v_data
             labels = torch.tensor(labels,dtype=torch.float32).view(-1,1)
             inputs = torch.tensor(inputs, dtype=torch.float32).view(-1,1,6)
 
-            y_pred = model(inputs) # 神经网络的输出结果
-            batch_loss = criterion(y_pred, labels) #计算误差
+            y_pred = model(inputs) # the out put of the network
+            batch_loss = criterion(y_pred, labels)
             val_losses.append(batch_loss.item())
         
 

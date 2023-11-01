@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from torch.utils.data import Dataset # Dataset 是一个抽象类，不能实例化，只能被继承
+from torch.utils.data import Dataset # Dataset is an abstract class, can only be herited
 from torch.utils.data import DataLoader # DataLoader is a class to help us loading data in Pytorch
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -56,7 +56,7 @@ def dataPrepare(x_data,y_data,batch_size,shuffle=True,num_workers=2):
      return dataLoader
 
 
-def get_real_y(filepath): # 返回值为numpy
+def get_real_y(filepath): # return value type is numpy
         odata = pd.read_csv(filepath,usecols=[8])
         odata = np.array(odata)
         odata_len = len(odata)
