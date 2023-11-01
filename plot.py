@@ -21,7 +21,6 @@ def plot_Train_and_validation_loss(train_loss, valid_loss):
     else:
         os.makedirs("./pic")
         plt.savefig('pic/loss.png',format='png',dpi= 200)
-    plt.show()
     plt.close()
 
 
@@ -41,5 +40,4 @@ def plot_prediction_curve(labels, y_predict, test_loss):
     else:
         os.makedirs("./pic")
         plt.savefig('pic/result.png',format='png',dpi=200)
-    plt.show()
     plt.close() 
