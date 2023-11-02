@@ -10,14 +10,21 @@ import torch
 def main(args):
     # 1.data preparation
     print(args.is_train)
-    original_x, original_y = dataloader.sort_data_by_slidingWindow(filepath=args.filepath,col=[8])
-    train_x,train_y,val_x,val_y,test_x,test_y = dataloader.train_validate_test_data_split(x_data=original_x,y_data=original_y,train_percentage=args.training_percentage,validate_percentage=args.validate_percentage)
-    train_loader = dataloader.dataPrepare(x_data=train_x,y_data=train_y,batch_size=args.batch_size,shuffle=True)# train_loader
-    val_loader = dataloader.dataPrepare(x_data=val_x,y_data=val_y,batch_size=args.batch_size,shuffle=False) # validate_loader
-    test_loader = dataloader.dataPrepare(x_data=test_x,y_data=test_y, batch_size=1, shuffle=False) # testloader
+    x, y = dataloader.sort_data_by_slidingWindow(filepath=args.filepath,col=[8])
+    x_train,y_train,x_val,y_val,x_test,y_test = dataloader.train_validate_test_data_split(x_data=x,
+                                                                                          y_data=y,
+                                                                                          train_percentage=args.training_percentage,
+                                                                                          validate_percentage=args.validate_percentage)
+    train_loader = dataloader.dataPrepare(x_data=x_train,y_data=y_train,
+                                          batch_size=args.batch_size,shuffle=True)# train_loader
+    val_loader = dataloader.dataPrepare(x_data=x_val,y_data=y_val,
+                                        batch_size=args.batch_size,shuffle=False) # validate_loader
+    test_loader = dataloader.dataPrepare(x_data=x_test,y_data=y_test, 
+                                         batch_size=1, shuffle=False) # testloader
 
     # 2. Model initialization
-    model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
+    model = md.LSTM_Regression(input_size=args.input_size,
+                               hidden_size=args.hidden_size)
 
 
 
@@ -25,28 +32,28 @@ def main(args):
     # 3. Model training
     if args.is_train.lower() == "yes":
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
-        cycle_validation_min_loss = []
-        train_losses = []
-        val_losses =[]
+        loss_cycle_validation_min = []
+        losses_train = []
+        losses_val =[]
         for n in range(args.cycle):
             model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
-            model, train_loss, val_loss = train.training_cycle(model=model,
+            model, loss_train, loss_val = train.training_cycle(model=model,
                                                             epoch_sum=args.num_of_epochs,
                                                             train_loader=train_loader,
                                                             val_loader=val_loader,
                                                             patience=args.patience,
                                                             learningRate=args.learning_rate,
                                                             index_of_main_cyle=n)
-            cycle_validation_min_loss.append(np.min(val_loss))
-            train_losses.append(train_loss)
-            val_losses.append(val_loss)
+            loss_cycle_validation_min.append(np.min(val_loss))
+            losses_train.append(loss_train)
+            losses_val.append(loss_val)
             print("round"+str(n+1)+" has been done")
-        index = np.argmin(cycle_validation_min_loss) # argmin get the index of the minimum element of the array
+        index = np.argmin(loss_cycle_validation_min) # argmin get the index of the minimum element of the array
         train.change_best_model_name(index=index,model_filepath="./models")
-        train_loss = train_losses[index]
-        val_loss = val_losses[index]
+        loss_train = losses_train[index]
+        loss_val = losses_val[index]
         # plot the training and validation loss curve
-        plot.plot_Train_and_validation_loss(train_loss=train_loss,valid_loss=val_loss)
+        plot.plot_Train_and_validation_loss(loss_train=loss_train,loss_val=loss_val)
     else:
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
     
@@ -54,10 +61,10 @@ def main(args):
     
     
     # 4. Model evaluation
-    labels, y_predict,test_loss = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
+    labels, predictions,loss_test = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
     # plot on test set
-    plot.plot_prediction_curve(labels=labels, y_predict=y_predict,test_loss=test_loss)
-    print("The test loss of this model is "+ str(test_loss.data.numpy()))
+    plot.plot_prediction_curve(y=labels, y_predict=predictions,test_loss=loss_test)
+    print("The test loss of this model is "+ str(loss_test.data.numpy()))
 
 
 
