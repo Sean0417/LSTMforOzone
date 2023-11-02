@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import matplotlib.pyplot as plt
 
 def evaluation(model,test_loader,lossfunction):
     # initialization
