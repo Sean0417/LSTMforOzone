@@ -12,13 +12,16 @@ def main(args):
     print(args.is_train)
     original_x, original_y = dataloader.sort_data_by_slidingWindow(filepath=args.filepath,col=[8])
     train_x,train_y,val_x,val_y,test_x,test_y = dataloader.train_validate_test_data_split(x_data=original_x,y_data=original_y,train_percentage=args.training_percentage,validate_percentage=args.validate_percentage)
-    train_loader = dataloader.dataPrepare(x_data=train_x,y_data=train_y,batch_size=args.batch_size,shuffle=True)# 训练集
-    val_loader = dataloader.dataPrepare(x_data=val_x,y_data=val_y,batch_size=args.batch_size,shuffle=False) # 测试集
-    # test_loader = dataloader.dataPrepare(x_data=test_x,y_data=test_y, batch_size=1, shuffle=False) # 测试集
+    train_loader = dataloader.dataPrepare(x_data=train_x,y_data=train_y,batch_size=args.batch_size,shuffle=True)# train_loader
+    val_loader = dataloader.dataPrepare(x_data=val_x,y_data=val_y,batch_size=args.batch_size,shuffle=False) # validate_loader
+    test_loader = dataloader.dataPrepare(x_data=test_x,y_data=test_y, batch_size=1, shuffle=False) # testloader
 
-
-    # 2. Model building
+    # 2. Model initialization
     model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
+
+
+
+
     # 3. Model training
     if args.is_train.lower() == "yes":
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
@@ -46,11 +49,15 @@ def main(args):
         plot.plot_Train_and_validation_loss(train_loss=train_loss,valid_loss=val_loss)
     else:
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
+    
+    
+    
+    
     # 4. Model evaluation
-    labels, y_predict,test_loss = evaluation.evaluation(model=model,test_x=test_x,test_y=test_y,lossfunction=args.lossfunction)
-
+    labels, y_predict,test_loss = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
+    # plot on test set
     plot.plot_prediction_curve(labels=labels, y_predict=y_predict,test_loss=test_loss)
-    print("The test loss of this model is "+ test_loss)
+    print("The test loss of this model is "+ str(test_loss.data.numpy()))
 
 
 
