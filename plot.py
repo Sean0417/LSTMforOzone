@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-def plot_Train_and_validation_loss(train_loss, valid_loss):
+def plot_Train_and_validation_loss(loss_train, loss_val):
     # visualize the loss as the network trained
     plt.figure()
-    plt.plot(range(1,len(train_loss)+1),train_loss, label= 'Train Loss')
-    plt.plot(range(1,len(valid_loss)+1),valid_loss,label='Validation Loss')
+    plt.plot(range(1,len(loss_train)+1),loss_train, label= 'Train Loss')
+    plt.plot(range(1,len(loss_val)+1),loss_val,label='Validation Loss')
 
     # find postion of lowest validation loss
-    minposs = valid_loss.index(min(valid_loss))+1
+    minposs = loss_val.index(min(loss_val))+1
     plt.axvline(minposs, linestyle='--', color='r',label='Early Stopping Checkpoint')
     
     plt.title("Learning_curve")
@@ -24,12 +24,12 @@ def plot_Train_and_validation_loss(train_loss, valid_loss):
     plt.close()
 
 
-def plot_prediction_curve(labels, y_predict, test_loss):
+def plot_prediction_curve(y, y_predict, loss_test):
     plt.figure()
     # plt.plot(y_predict,'r',label = 'prediction')
-    plt.plot(labels[500:600], 'b', label='ground truth')
+    plt.plot(y[500:600], 'b', label='ground truth')
     plt.plot(y_predict[500:600],'r',label = 'prediction')
-    plt.title('Ozone predictions with test loss='+str(test_loss.data.numpy()))
+    plt.title('Ozone predictions with test loss='+str(loss_test.data.numpy()))
     plt.xlabel('time')
     plt.ylabel('Ozone')
     plt.xticks(np.arange(0, 100, step = 10))
