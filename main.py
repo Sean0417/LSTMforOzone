@@ -44,7 +44,7 @@ def main(args):
                                                             patience=args.patience,
                                                             learningRate=args.learning_rate,
                                                             index_of_main_cyle=n)
-            loss_cycle_validation_min.append(np.min(val_loss))
+            loss_cycle_validation_min.append(np.min(loss_val))
             losses_train.append(loss_train)
             losses_val.append(loss_val)
             print("round"+str(n+1)+" has been done")
