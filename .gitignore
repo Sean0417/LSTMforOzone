@@ -5,9 +5,11 @@ venv
 pic
 models
 __pycache__
+wandb
 # files
 *.pt
 .DS
+wandbAPIKey.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
