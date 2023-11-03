@@ -5,12 +5,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import os
+import wandb
 class opt_and_cri_functions:
     def __init__(self,model,learningRate,size_average=True):
         self.criterion = torch.nn.MSELoss(size_average=size_average)
         self.optimizer = torch.optim.Adam(model.parameters(), lr = learningRate)
 
 def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience,index_of_main_cyle,size_average=True):
+    wandb.init(
+        project="LSTMforOzone",
+        config={
+            "learningRate": learningRate,
+            "architechture":"LSTM",
+            "dataset":"Ozone",
+            "epochs": epoch_sum
+        }
+    )
     time_start = time.time()
     ocfunction = opt_and_cri_functions(model,learningRate,size_average)
     optimizer = ocfunction.optimizer
@@ -32,13 +42,12 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
             labels = torch.tensor(labels,dtype=torch.float32).view(-1,1)
             inputs = torch.tensor(inputs, dtype=torch.float32).view(-1,1,6)
 
-            y_pred = model(inputs)
+            predictions = model(inputs)
             optimizer.zero_grad()
-            batch_loss = criterion(y_pred, labels)
+            batch_loss = criterion(predictions, labels)
             batch_loss.backward()
             optimizer.step()
             train_losses.append(batch_loss.item())
-
         # ============================================
         # validation mode mode
         model.eval() 
@@ -49,8 +58,8 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
             labels = torch.tensor(labels,dtype=torch.float32).view(-1,1)
             inputs = torch.tensor(inputs, dtype=torch.float32).view(-1,1,6)
 
-            y_pred = model(inputs) # the out put of the network
-            batch_loss = criterion(y_pred, labels)
+            predictions = model(inputs) # the out put of the network
+            batch_loss = criterion(predictions, labels)
             val_losses.append(batch_loss.item())
         
 
@@ -58,6 +67,7 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
         # calculate average loss over an epoch
         train_loss = np.average(train_losses)
         val_loss = np.average(val_losses)
+        wandb.log({"train_loss": train_loss,"val_loss":val_loss})
         avg_train_losses.append(train_loss)
         avg_val_losses.append(val_loss)
 
@@ -79,6 +89,7 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
         if early_stopping.early_stop:
             print("Early stopping")
             break
+    wandb.finish()
     time_end = time.time()
     duaration  = time_end - time_start
     print("The training took %.2f"%(duaration/60)+ "mins.")
