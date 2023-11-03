@@ -12,15 +12,6 @@ class opt_and_cri_functions:
         self.optimizer = torch.optim.Adam(model.parameters(), lr = learningRate)
 
 def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience,index_of_main_cyle,size_average=True):
-    wandb.init(
-        project="LSTMforOzone",
-        config={
-            "learningRate": learningRate,
-            "architechture":"LSTM",
-            "dataset":"Ozone",
-            "epochs": epoch_sum
-        }
-    )
     time_start = time.time()
     ocfunction = opt_and_cri_functions(model,learningRate,size_average)
     optimizer = ocfunction.optimizer
