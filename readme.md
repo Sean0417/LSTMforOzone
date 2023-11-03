@@ -33,7 +33,7 @@ tzdata==2023.3<br>
 
 ## Deploy Python virtual Environment
 Script in shell:<br>
-''' shell
+'''shell
 python3 -m pip install --user virtualenv<br>
 python3 -m venv venv_test<br>
 source venv_test/bin/activate<br>
@@ -67,3 +67,6 @@ pip install -r requirements.txt
 ### plot.py
 - plot_prediction_curve(): plot the prediction results with the data on test set.
 - plot_Train_and_validation_loss():plot the learning curve(training loss and validation loss).
+## contact
+- email: xinyu.xie@stud.uni-due.de
+- telephone: +49 15252305027
