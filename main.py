@@ -1,14 +1,26 @@
 import dataloader
 import model as md
-import time
 import train
 import evaluation
 import argparse
 import plot
 import numpy as np
-import torch
 import wandb
 def main(args):
+    # wandb initialization
+    wandb.init(project='LSTMpredictOzone',
+               entity='sean_ygtrece',
+               name='ko12',
+               id="qvlp96vk",
+               reinit=True,
+               config = {
+                   'learning_rate': args.learning_rate,
+                   'batch_size':args.batch_size,
+                   'num_epochs:':args.num_of_epochs,
+                    "architechture":"LSTM",
+                    "dataset":"Ozone",
+               }
+               )
     # 1.data preparation
     print(args.is_train)
     x, y = dataloader.sort_data_by_slidingWindow(filepath=args.filepath,col=[8])
@@ -23,7 +35,8 @@ def main(args):
 
 
     # 3. Model training
-    if args.is_train.lower() == "yes":
+    # if args.is_train.lower() == "yes":
+    if args.is_train == True:
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         loss_cycle_validation_min = []
         losses_train = []
@@ -62,7 +75,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Set hyper parameters for the training.')
     parser.add_argument('--num_exps',type=int,required=True,default=1,help="times of running experiments")
-    parser.add_argument('--is_train',type=str,help="parameter to determine whether run training cycle or not")
+    parser.add_argument('--is_train',action="store_true",help="parameter to determine whether run training cycle or not")
     parser.add_argument('--filepath',type=str, required=True,help='file directory')
     parser.add_argument('-lr','--learning_rate',type=float,default=1e-2,required=True,help='learning rate')
     parser.add_argument('-tp','--training_percentage',type=float,default=0.7,required=True,help='the percentage of the training sets')
