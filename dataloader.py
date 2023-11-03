@@ -3,8 +3,6 @@ import torch
 from torch.utils.data import Dataset # Dataset is an abstract class, can only be herited
 from torch.utils.data import DataLoader # DataLoader is a class to help us loading data in Pytorch
 import pandas as pd
-import matplotlib.pyplot as plt
-import datetime
 
 def sort_data_by_slidingWindow(filepath,col):
         odata = pd.read_csv(filepath,usecols=col)
