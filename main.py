@@ -7,6 +7,7 @@ import argparse
 import plot
 import numpy as np
 import torch
+import wandb
 def main(args):
     # 1.data preparation
     print(args.is_train)
@@ -14,6 +15,7 @@ def main(args):
     x_train,y_train,x_val,y_val,x_test,y_test = dataloader.train_validate_test_data_split(x_data=x, y_data=y, train_percentage=args.training_percentage, validate_percentage=args.validate_percentage)
     train_loader = dataloader.dataPrepare(x_data=x_train,y_data=y_train, batch_size=args.batch_size, shuffle=True)# train_loader
     val_loader = dataloader.dataPrepare(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
+    test_loader = dataloader.dataPrepare(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
     # 2. Model initialization
     model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
 
@@ -52,10 +54,8 @@ def main(args):
     
     
     # 4. Model evaluation
-    labels, predictions,loss_test = evaluation.evaluation(model=model,test_x=x_test,test_y=y_test,lossfunction=args.lossfunction)
+    labels, predictions,loss_test = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
     plot.plot_prediction_curve(y=labels, y_predict=predictions,loss_test=loss_test)
-    print("The test loss of this model is "+ str(loss_test.data.numpy()))
-
 
 
 
