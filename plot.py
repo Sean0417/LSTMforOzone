@@ -26,15 +26,13 @@ def plot_Train_and_validation_loss(loss_train, loss_val):
 
 def plot_prediction_curve(y, y_predict, loss_test):
     plt.figure()
-    # plt.plot(y_predict,'r',label = 'prediction')
     plt.plot(y[500:600], 'b', label='ground truth')
     plt.plot(y_predict[500:600],'r',label = 'prediction')
-    plt.title('Ozone predictions with test loss='+str(loss_test.data.numpy()))
+    plt.title('Ozone predictions with test loss='+str(loss_test))
     plt.xlabel('time')
     plt.ylabel('Ozone')
     plt.xticks(np.arange(0, 100, step = 10))
     plt.legend(loc='best')
-    # plt.savefig('pic/result.png',format='png',dpi=200)
     if os.path.exists('./pic'):
         plt.savefig('pic/result.png',format='png',dpi=200)
     else:
