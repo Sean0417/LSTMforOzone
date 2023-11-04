@@ -33,12 +33,13 @@ tzdata==2023.3<br>
 
 ## Deploy Python virtual Environment
 Script in shell:<br>
-'''shell
-python3 -m pip install --user virtualenv<br>
-python3 -m venv venv_test<br>
-source venv_test/bin/activate<br>
-pip install -r requirements.txt
-'''
+<ul>
+    <li>python3 -m pip install --user virtualenv</li>
+    <li>python3 -m venv venv</li>
+    <li>source venv_test/bin/activate</li>
+    <li>pip install -r requirements.txt</li>
+<ul>
+
 ## How to run the programm
   open the command window in current folder and enter 
   '''shell
