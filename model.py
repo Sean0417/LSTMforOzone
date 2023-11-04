@@ -1,7 +1,6 @@
 import numpy as np
-import torch
 import torch.nn as nn
-from torch.utils.data import Dataset # Dataset 是一个抽象类，不能实例化，只能被继承
+from torch.utils.data import Dataset
 from torch.utils.data import DataLoader # DataLoader is a class to help us loading data in Pytorch
 
 class LSTM_Regression(nn.Module):

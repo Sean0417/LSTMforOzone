@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from early_stopping import EarlyStopping
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 import os
 import wandb
