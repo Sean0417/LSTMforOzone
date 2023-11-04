@@ -13,20 +13,24 @@ pandas==2.1.2<br>
 torch==2.1.0<br>
 wandb==0.15.12<br>
 
-## Deploy Python virtual Environment
-Script in shell:<br>
-<ul>
-    <li>python3 -m pip install --user virtualenv</li>
-    <li>python3 -m venv venv</li>
-    <li>source venv_test/bin/activate</li>
-    <li>pip install -r requirements.txt</li>
-</ul>
+## Instruction
+<p>To conduct the experiment, we first need to deploy the virtual environment.</p>
+To deploy the virtual evrionment,
 
-## How to run the programm
-  open the command window in current folder and enter 
-  '''shell
+  ```
+    python3 -m pip install --user virtualenv
+    python3 -m venv venv
+    source venv_test/bin/activate
+    pip install -r requirements.txt
+  ```
+
+<p>After the venv is set up, we can run the programm with the script start_training.sh, also you can change the hyper parameters in the script if you want.</p>
+To run the programm,
+
+  ```
   source start_py.sh
-  '''
+  ```
+<p>After the training is done, you can find related plottings in the folder pic, which includes loss.png and results.png. loss.png shows the train loss and validation loss of the best model. results.png shows the trend differences between labels and predictions.</p>
 ## File Structure
 ### main.py<br>
 - the main function of the programm where lays the sequence of the whole project<br>
