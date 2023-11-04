@@ -31,6 +31,7 @@ To run the programm,
   source start_py.sh
   ```
 <p>After the training is done, you can find related plottings in the folder pic, which includes loss.png and results.png. loss.png shows the train loss and validation loss of the best model. results.png shows the trend differences between labels and predictions.</p>
+
 ## File Structure
 ### main.py<br>
 - the main function of the programm where lays the sequence of the whole project<br>
