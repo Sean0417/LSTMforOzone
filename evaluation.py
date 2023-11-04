@@ -27,7 +27,7 @@ def evaluation(model,test_loader,lossfunction):
             y = y.data.numpy()
             predictions.extend(y_pred)
             labels.extend(y)
-            wandb.log({"test_loss":test_loss,"y":y,"y_predict":y_pred})
+            wandb.log({"test_loss":test_loss})
         test_loss = test_loss_sum/n
         # wandb.log({"test_loss":test_loss})
     return labels, predictions, test_loss # labels and predictions are lists, each element is a numpy dtype=float32

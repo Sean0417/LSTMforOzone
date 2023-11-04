@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import wandb
 def plot_Train_and_validation_loss(loss_train, loss_val):
     # visualize the loss as the network trained
     plt.figure()
@@ -21,10 +22,11 @@ def plot_Train_and_validation_loss(loss_train, loss_val):
     else:
         os.makedirs("./pic")
         plt.savefig('pic/loss.png',format='png',dpi= 200)
+    wandb.log({"best_train_validation_curve":wandb.Plotly(plt.gcf())})
     plt.close()
 
 
-def plot_prediction_curve(y, y_predict, loss_test):
+def plot_prediction_curve(y, y_predict, loss_test, is_train):
     plt.figure()
     plt.plot(y[500:600], 'b', label='ground truth')
     plt.plot(y_predict[500:600],'r',label = 'prediction')
@@ -38,4 +40,6 @@ def plot_prediction_curve(y, y_predict, loss_test):
     else:
         os.makedirs("./pic")
         plt.savefig('pic/result.png',format='png',dpi=200)
+    if is_train == True:
+        wandb.log({"plot_prediction_curve":wandb.Plotly(plt.gcf())})
     plt.close() 

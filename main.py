@@ -7,20 +7,9 @@ import plot
 import numpy as np
 import wandb
 def main(args):
-    # wandb initialization
-    wandb.init(project='LSTMpredictOzone',
-               entity='sean_ygtrece',
-               name='ko12',
-               id="qvlp96vk",
-               reinit=True,
-               config = {
-                   'learning_rate': args.learning_rate,
-                   'batch_size':args.batch_size,
-                   'num_epochs:':args.num_of_epochs,
-                    "architechture":"LSTM",
-                    "dataset":"Ozone",
-               }
-               )
+
+    
+
     # 1.data preparation
     print(args.is_train)
     x, y = dataloader.sort_data_by_slidingWindow(filepath=args.filepath,col=[8])
@@ -28,11 +17,10 @@ def main(args):
     train_loader = dataloader.dataPrepare(x_data=x_train,y_data=y_train, batch_size=args.batch_size, shuffle=True)# train_loader
     val_loader = dataloader.dataPrepare(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
     test_loader = dataloader.dataPrepare(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
+
+
     # 2. Model initialization
     model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
-
-
-
 
     # 3. Model training
     # if args.is_train.lower() == "yes":
@@ -42,7 +30,24 @@ def main(args):
         losses_train = []
         losses_val =[]
         for n in range(args.num_exps):
+            # wandb initialization
+            wandb.init(project='LSTMpredictOzone',
+                    name='experiment_'+str(n),# name on the website
+                    id="exp_"+str(n),# name in the local log
+                    job_type="training",
+                    reinit=True,
+                    config = {
+                        'learning_rate': args.learning_rate,
+                        'batch_size':args.batch_size,
+                        'num_epochs:':args.num_of_epochs,
+                            "architechture":"LSTM",
+                            "dataset":"Ozone",
+                            "is_train":True
+                    }
+                    )
+            # initialize the model in the begining of every experiment
             model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
+            wandb.watch(model, log="all")
             model, loss_train, loss_val = train.training_cycle(model=model,
                                                             epoch_sum=args.num_of_epochs,
                                                             train_loader=train_loader,
@@ -68,7 +73,7 @@ def main(args):
     
     # 4. Model evaluation
     labels, predictions,loss_test = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
-    plot.plot_prediction_curve(y=labels, y_predict=predictions,loss_test=loss_test)
+    plot.plot_prediction_curve(y=labels, y_predict=predictions,loss_test=loss_test,is_train=args.is_train)
 
 
 

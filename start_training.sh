@@ -1,6 +1,6 @@
-source venv_test/bin/activate
-python main.py --cycle=2 \
---is_train="yes" \
+source venv/bin/activate
+python main.py --num_exps=2 \
+--is_train \
 --filepath=data/data.csv \
 --learning_rate=0.01 \
 --training_percentage=0.7 \

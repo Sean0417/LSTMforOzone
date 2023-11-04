@@ -10,6 +10,8 @@ wandb
 *.pt
 .DS
 wandbAPIKey.txt
+test.py
+test.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

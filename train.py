@@ -80,7 +80,6 @@ def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience
         if early_stopping.early_stop:
             print("Early stopping")
             break
-    wandb.finish()
     time_end = time.time()
     duaration  = time_end - time_start
     print("The training took %.2f"%(duaration/60)+ "mins.")
