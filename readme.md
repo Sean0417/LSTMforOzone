@@ -7,29 +7,11 @@ Python 3.10.9
 <P>Visual Studio Code
 
 ## Requirements
-contourpy==1.1.1<br>
-cycler==0.12.1<br>
-filelock==3.12.4<br>
-fonttools==4.43.1<br>
-fsspec==2023.10.0<br>
-Jinja2==3.1.2<br>
-kiwisolver==1.4.5<br>
-MarkupSafe==2.1.3<br>
 matplotlib==3.8.0<br>
-mpmath==1.3.0<br>
-networkx==3.2<br>
 numpy==1.26.1<br>
-packaging==23.2<br>
 pandas==2.1.2<br>
-Pillow==10.1.0<br>
-pyparsing==3.1.1<br>
-python-dateutil==2.8.2<br>
-pytz==2023.3.post1<br>
-six==1.16.0<br>
-sympy==1.12<br>
 torch==2.1.0<br>
-typing_extensions==4.8.0<br>
-tzdata==2023.3<br>
+wandb==0.15.12<br>
 
 ## Deploy Python virtual Environment
 Script in shell:<br>
@@ -52,7 +34,6 @@ Script in shell:<br>
 - sort_data_by_slidingwindow(): sort the data in sliding window, the return value type are two arrays.
 - train_validate_test_data_split(): divide the data into training set, validation set and test set.
 - dataPrepare(): get the required dataloader.
-- 
 ### model.py
 -  LSTM_Regression: the class of the training model, which consists of a lstm layer and a linear layer.
 ### train.py
