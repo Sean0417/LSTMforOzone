@@ -38,7 +38,7 @@ Script in shell:<br>
     <li>python3 -m venv venv</li>
     <li>source venv_test/bin/activate</li>
     <li>pip install -r requirements.txt</li>
-<ul>
+</ul>
 
 ## How to run the programm
   open the command window in current folder and enter 
