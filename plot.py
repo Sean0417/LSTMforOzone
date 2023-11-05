@@ -26,7 +26,7 @@ def plot_Train_and_validation_loss(loss_train, loss_val):
     plt.close()
 
 
-def plot_prediction_curve(y, y_predict, loss_test, is_train):
+def plot_prediction_curve(y, y_predict, loss_test):
     plt.figure()
     plt.plot(y[500:600], 'b', label='ground truth')
     plt.plot(y_predict[500:600],'r',label = 'prediction')
@@ -40,6 +40,6 @@ def plot_prediction_curve(y, y_predict, loss_test, is_train):
     else:
         os.makedirs("./pic")
         plt.savefig('pic/result.png',format='png',dpi=200)
-    if is_train == True:
-        wandb.log({"plot_prediction_curve":wandb.Plotly(plt.gcf())})
-    plt.close() 
+
+    wandb.log({"plot_prediction_curve":wandb.Plotly(plt.gcf())})
+    plt.close()
