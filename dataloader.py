@@ -16,7 +16,6 @@ def sort_data_by_slidingWindow(filepath,col):
             _x = odata[i:(i+6),0]
 
             x_data.append(_x)
-            # _y = odata[i+6]
             y_data.append(odata[i+6,0])
 
         x_data = np.array(x_data)
