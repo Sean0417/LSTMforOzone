@@ -23,7 +23,6 @@ def main(args):
     model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
 
     # 3. Model training
-    # if args.is_train.lower() == "yes":
     if args.is_train == True:
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         loss_cycle_validation_min = []
