@@ -28,23 +28,22 @@ def main(args):
         loss_cycle_validation_min = []
         losses_train = []
         losses_val =[]
+        # wandb initialization
+        wandb.init(project='LSTMpredictOzone',
+                name='training_validation',# name on the website
+                id="exp",# name in the local log
+                job_type="training",
+                reinit=True,
+                config = {
+                    'learning_rate': args.learning_rate,
+                    'batch_size':args.batch_size,
+                    'num_epochs:':args.num_of_epochs,
+                        "architechture":"LSTM",
+                        "dataset":"Ozone",
+                        "is_train":True
+                }
+                )
         for n in range(args.num_exps):
-            # wandb initialization
-            wandb.init(project='LSTMpredictOzone',
-                    name='experiment_'+str(n),# name on the website
-                    id="exp_"+str(n),# name in the local log
-                    job_type="training",
-                    reinit=True,
-                    config = {
-                        'learning_rate': args.learning_rate,
-                        'batch_size':args.batch_size,
-                        'num_epochs:':args.num_of_epochs,
-                            "architechture":"LSTM",
-                            "dataset":"Ozone",
-                            "is_train":True
-                    }
-                    )
-            # initialize the model in the begining of every experiment
             model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
             wandb.watch(model, log="all")
             model, loss_train, loss_val = train.training_cycle(model=model,
@@ -66,13 +65,24 @@ def main(args):
         plot.plot_Train_and_validation_loss(loss_train=loss_train,loss_val=loss_val)
     else:
         model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
-    
+        
     
     
     
     # 4. Model evaluation
+    # wandb initialization
+    wandb.init(project='LSTMpredictOzone',
+            name='test',# name on the website
+            id="test",# name in the local log
+            job_type="training",
+            reinit=True,
+            config = {
+                    "architechture":"LSTM",
+                    "dataset":"Ozone",
+            }
+            )
     labels, predictions,loss_test = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
-    plot.plot_prediction_curve(y=labels, y_predict=predictions,loss_test=loss_test,is_train=args.is_train)
+    plot.plot_prediction_curve(y=labels, y_predict=predictions,loss_test=loss_test)
 
 
 
