@@ -56,4 +56,3 @@ To run the programm,
 - plot_Train_and_validation_loss():plot the learning curve(training loss and validation loss).
 ## contact
 - email: xinyu.xie@stud.uni-due.de
-- telephone: +49 15252305027
