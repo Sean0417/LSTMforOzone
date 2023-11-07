@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import wandb
-def plot_Train_and_validation_loss(loss_train, loss_val):
+def plot_learning_curve(loss_train, loss_val):
     # visualize the loss as the network trained
     plt.figure()
     plt.plot(range(1,len(loss_train)+1),loss_train, label= 'Train Loss')

@@ -1,6 +1,9 @@
-import dataloader
+from dataprocess import sort_data
+from dataprocess import data_split
+from dataprocess import prepare_dataloader
 from model import LSTM_Regression
 from train import training_validation
+from train import change_best_model_name
 import evaluation
 import argparse
 import plot
@@ -12,54 +15,39 @@ def main(args):
 
     # 1.data preparation
     print(args.is_train)
-    x, y = dataloader.sort_data_by_slidingWindow(filepath=args.filepath,col=[8])
-    x_train,y_train,x_val,y_val,x_test,y_test = dataloader.train_validate_test_data_split(x_data=x, y_data=y, train_percentage=args.training_percentage, validate_percentage=args.validate_percentage)
-    train_loader = dataloader.dataPrepare(x_data=x_train,y_data=y_train, batch_size=args.batch_size, shuffle=True)# train_loader
-    val_loader = dataloader.dataPrepare(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
-    test_loader = dataloader.dataPrepare(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
+    x, y = sort_data(filepath=args.filepath,col=[8])
+    x_train,y_train,x_val,y_val,x_test,y_test = data_split(x_data=x, y_data=y, train_percentage=args.training_percentage, validate_percentage=args.validate_percentage)
+
+    train_loader = prepare_dataloader(x_data=x_train,y_data=y_train, batch_size=args.batch_size, shuffle=True)# train_loader
+    val_loader = prepare_dataloader(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
+    test_loader = prepare_dataloader(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
 
 
     # 3. Model training
     if args.is_train == True:
-        model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         loss_cycle_validation_min = []
         losses_train = []
         losses_val =[]
-        # wandb initialization
-        wandb.init(project='LSTMpredictOzone',
-                name='training_validation',# name on the website
-                id="exp",# name in the local log
-                job_type="training",
-                reinit=True,
-                config = {
-                    'learning_rate': args.learning_rate,
-                    'batch_size':args.batch_size,
-                    'num_epochs:':args.num_of_epochs,
-                        "architechture":"LSTM",
-                        "dataset":"Ozone",
-                        "is_train":True
-                }
-                )
+
         for n in range(args.num_exps):
             model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
-            wandb.watch(model, log="all")
             model, loss_train, loss_val = training_validation(model=model,
                                                             epoch_sum=args.num_of_epochs,
                                                             train_loader=train_loader,
                                                             val_loader=val_loader,
                                                             patience=args.patience,
-                                                            learningRate=args.learning_rate,
+                                                            learning_rate=args.learning_rate,
                                                             index_of_main_cyle=n)
             loss_cycle_validation_min.append(np.min(loss_val))
             losses_train.append(loss_train)
             losses_val.append(loss_val)
             print("round"+str(n+1)+" has been done")
         index = np.argmin(loss_cycle_validation_min) # argmin get the index of the minimum element of the array
-        train.change_best_model_name(index=index,model_filepath="./models")
+        change_best_model_name(index=index,model_filepath="./models")
         loss_train = losses_train[index]
         loss_val = losses_val[index]
         # plot the training and validation loss curve
-        plot.plot_Train_and_validation_loss(loss_train=loss_train,loss_val=loss_val)
+        plot.plot_learning_curve(loss_train=loss_train,loss_val=loss_val)
     else:
         model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         
