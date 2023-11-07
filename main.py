@@ -1,14 +1,14 @@
 import dataloader
-import model as md
-import train
+from model import LSTM_Regression
+from train import training_validation
 import evaluation
 import argparse
 import plot
 import numpy as np
 import wandb
-def main(args):
 
-    
+
+def main(args):
 
     # 1.data preparation
     print(args.is_train)
@@ -19,12 +19,9 @@ def main(args):
     test_loader = dataloader.dataPrepare(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
 
 
-    # 2. Model initialization
-    model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
-
     # 3. Model training
     if args.is_train == True:
-        model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
+        model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         loss_cycle_validation_min = []
         losses_train = []
         losses_val =[]
@@ -44,9 +41,9 @@ def main(args):
                 }
                 )
         for n in range(args.num_exps):
-            model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
+            model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
             wandb.watch(model, log="all")
-            model, loss_train, loss_val = train.training_cycle(model=model,
+            model, loss_train, loss_val = training_validation(model=model,
                                                             epoch_sum=args.num_of_epochs,
                                                             train_loader=train_loader,
                                                             val_loader=val_loader,
@@ -64,7 +61,7 @@ def main(args):
         # plot the training and validation loss curve
         plot.plot_Train_and_validation_loss(loss_train=loss_train,loss_val=loss_val)
     else:
-        model = md.LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
+        model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         
     
     

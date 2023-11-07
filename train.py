@@ -10,7 +10,7 @@ class opt_and_cri_functions:
         self.criterion = torch.nn.MSELoss(size_average=size_average)
         self.optimizer = torch.optim.Adam(model.parameters(), lr = learningRate)
 
-def training_cycle(model,epoch_sum,train_loader,val_loader,learningRate,patience,index_of_main_cyle,size_average=True):
+def training_validation(model,epoch_sum,train_loader,val_loader,learningRate,patience,index_of_main_cyle,size_average=True):
     time_start = time.time()
     ocfunction = opt_and_cri_functions(model,learningRate,size_average)
     optimizer = ocfunction.optimizer
