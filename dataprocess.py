@@ -19,6 +19,7 @@ def sort_data(filepath,col):
 
         X = (np.array(X)).astype(np.float32)
         y = (np.array(y)).astype(np.float32)
+        
         return X, y
 
 def data_split(x_data, y_data, train_percentage, validate_percentage):
@@ -34,12 +35,14 @@ def data_split(x_data, y_data, train_percentage, validate_percentage):
     
 def prepare_dataloader(x_data,y_data,batch_size,shuffle=True,num_workers=2):
      dataset = OzoneDataset(x_data=x_data,y_data=y_data)
+
      dataLoader = DataLoader(
           dataset=dataset,
           batch_size=batch_size,
           shuffle=shuffle,
           num_workers=num_workers
      )
+
      return dataLoader
 
 

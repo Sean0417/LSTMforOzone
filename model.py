@@ -17,4 +17,5 @@ class LSTM_Regression(nn.Module):
         x = x.view(s*b,h)
         x = self.fc(x)
         x.view(s,b,-1)
+        
         return x

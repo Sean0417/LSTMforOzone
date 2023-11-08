@@ -17,11 +17,13 @@ def plot_learning_curve(train_loss, val_loss, plot_folder_dir, model_name):
     plt.ylabel("loss")
     plt.xlabel("epoch")
     plt.grid(True)
+
     if os.path.exists(plot_folder_dir):
         plt.savefig(plot_folder_dir+'/'+model_name+'.png',format='png',dpi= 200)
     else:
         os.makedirs(plot_folder_dir)
         plt.savefig(plot_folder_dir+'/'+model_name+'.png',format='png',dpi= 200)
+
     # wandb.log({"best_train_validation_curve":wandb.Plotly(plt.gcf())}) # print the learning curve on wandb
     plt.close()
 
@@ -35,6 +37,7 @@ def plot_prediction_curve(y, y_predict, test_loss,plot_folder_dir):
     plt.ylabel('Ozone')
     plt.xticks(np.arange(0, 100, step = 10))
     plt.legend(loc='best')
+    
     if os.path.exists(plot_folder_dir):
         plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
     else:

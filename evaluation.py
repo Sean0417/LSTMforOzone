@@ -29,11 +29,14 @@ def evaluation(model,test_loader,lossfunction,model_filepath):
 
             test_loss = criterion(y_pred,y).item()
             test_loss_sum +=test_loss
+
             y_pred = y_pred.numpy()
             y = y.data.numpy()
             predictions.extend(y_pred)
             targets.extend(y)
+
             wandb.log({"test_loss":test_loss})
+            
         avg_test_loss = test_loss_sum/len(targets)
 
     return targets, predictions, avg_test_loss # labels and predictions are lists, each element is a numpy dtype=float32
