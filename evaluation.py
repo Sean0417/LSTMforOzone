@@ -3,12 +3,12 @@ import numpy as np
 import wandb
 import sys
 
-def evaluation(model,test_loader,lossfunction,filepath):
+def evaluation(model,test_loader,lossfunction,model_filepath):
 
     test_loss_sum = 9
     predictions = []
     targets = []
-    model.load_state_dict(torch.load(filepath))
+    model.load_state_dict(torch.load(model_filepath))
    
     model.eval()
 
@@ -33,7 +33,7 @@ def evaluation(model,test_loader,lossfunction,filepath):
             y = y.data.numpy()
             predictions.extend(y_pred)
             targets.extend(y)
-
+            wandb.log({"test_loss":test_loss})
         avg_test_loss = test_loss_sum/len(targets)
 
     return targets, predictions, avg_test_loss # labels and predictions are lists, each element is a numpy dtype=float32
