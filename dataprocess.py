@@ -1,6 +1,4 @@
 import numpy as np
-import torch
-from torch.utils.data import Dataset # Dataset is an abstract class, can only be herited
 from OzoneDataset import OzoneDataset
 from torch.utils.data import DataLoader # DataLoader is a class to help us loading data in Pytorch
 import pandas as pd
