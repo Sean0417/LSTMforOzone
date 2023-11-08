@@ -25,8 +25,6 @@ def main(args):
             job_type="training",
             reinit=True,
             )
-    wandb.watch(model,log="all")
-
 
     # Model training
     if args.is_train == True:
@@ -35,6 +33,7 @@ def main(args):
         for exp_idx in range(args.num_exps):
             # model initialization
             model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
+            wandb.watch(model,log="all")
             model_name, model, all_epoch_train_loss, all_epoch_val_loss = training_validation(model=model,
                                                             epoch_sum=args.num_of_epochs,
                                                             train_loader=train_loader,
@@ -47,13 +46,10 @@ def main(args):
             plot_learning_curve(train_loss=all_epoch_train_loss,val_loss=all_epoch_val_loss,plot_folder_dir=args.plot_folder_dir,model_name=model_name)
 
             print("round"+str(exp_idx+1)+" has been done")
-        
-
     
     else:
         # model initialization
         model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
-        
     
     
     
