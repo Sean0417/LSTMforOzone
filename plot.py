@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import wandb
-def plot_learning_curve(loss_train, loss_val):
+def plot_learning_curve(train_loss, val_loss, plot_folder_dir, model_name):
     # visualize the loss as the network trained
     plt.figure()
-    plt.plot(range(1,len(loss_train)+1),loss_train, label= 'Train Loss')
-    plt.plot(range(1,len(loss_val)+1),loss_val,label='Validation Loss')
+    plt.plot(range(1,len(train_loss)+1),train_loss, label= 'Train Loss')
+    plt.plot(range(1,len(val_loss)+1),val_loss,label='Validation Loss')
 
     # find postion of lowest validation loss
-    minposs = loss_val.index(min(loss_val))+1
+    minposs = val_loss.index(min(val_loss))+1
     plt.axvline(minposs, linestyle='--', color='r',label='Early Stopping Checkpoint')
     
     plt.title("Learning_curve")
@@ -17,29 +17,29 @@ def plot_learning_curve(loss_train, loss_val):
     plt.ylabel("loss")
     plt.xlabel("epoch")
     plt.grid(True)
-    if os.path.exists('./pic'):
-        plt.savefig('pic/loss.png',format='png',dpi= 200)
+    if os.path.exists(plot_folder_dir):
+        plt.savefig(plot_folder_dir+'/'+model_name+'.png',format='png',dpi= 200)
     else:
-        os.makedirs("./pic")
-        plt.savefig('pic/loss.png',format='png',dpi= 200)
-    wandb.log({"best_train_validation_curve":wandb.Plotly(plt.gcf())})
+        os.makedirs(plot_folder_dir)
+        plt.savefig(plot_folder_dir+'/'+model_name+'.png',format='png',dpi= 200)
+    # wandb.log({"best_train_validation_curve":wandb.Plotly(plt.gcf())}) # print the learning curve on wandb
     plt.close()
 
 
-def plot_prediction_curve(y, y_predict, loss_test):
+def plot_prediction_curve(y, y_predict, test_loss,plot_folder_dir):
     plt.figure()
     plt.plot(y[500:600], 'b', label='ground truth')
     plt.plot(y_predict[500:600],'r',label = 'prediction')
-    plt.title('Ozone predictions with test loss='+str(loss_test))
+    plt.title('Ozone predictions with test loss='+str(test_loss))
     plt.xlabel('time')
     plt.ylabel('Ozone')
     plt.xticks(np.arange(0, 100, step = 10))
     plt.legend(loc='best')
-    if os.path.exists('./pic'):
-        plt.savefig('pic/result.png',format='png',dpi=200)
+    if os.path.exists(plot_folder_dir):
+        plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
     else:
-        os.makedirs("./pic")
-        plt.savefig('pic/result.png',format='png',dpi=200)
+        os.makedirs(plot_folder_dir)
+        plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
 
-    wandb.log({"plot_prediction_curve":wandb.Plotly(plt.gcf())})
+    # wandb.log({"plot_prediction_curve":wandb.Plotly(plt.gcf())}) # print the plot of the prediction curve on wandb
     plt.close()
