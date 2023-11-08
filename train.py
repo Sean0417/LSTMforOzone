@@ -10,39 +10,37 @@ class opt_and_cri_functions:
         self.criterion = torch.nn.MSELoss(size_average=size_average)
         self.optimizer = torch.optim.Adam(model.parameters(), lr = learningRate)
 
-def training_validation(model,epoch_sum,train_loader,val_loader,learningRate,patience,index_of_main_cyle,size_average=True):
+def training_validation(model,epoch_sum,train_loader,val_loader,learning_rate,patience,exp_index,model_folder_directory,size_average=True):
     time_start = time.time()
-    ocfunction = opt_and_cri_functions(model,learningRate,size_average)
+
+    ocfunction = opt_and_cri_functions(model,learning_rate,size_average)
     optimizer = ocfunction.optimizer
     criterion = ocfunction.criterion
 
-    train_losses = []
-    val_losses = []
-    avg_train_losses = []
-    avg_val_losses = []
+    all_batch_train_losses = []
+    all_batch_val_losses = []
+    all_epoch_train_losses = []
+    all_epoch_val_losses = []
     
     early_stopping = EarlyStopping(patience=patience,verbose=True)
 
     for epoch in range(1,epoch_sum+1):
         # ============training mode==============
         model.train()  # 
-        # mini-Batch
-        for i, data in enumerate(train_loader,1):
-            inputs, labels = data
-            labels = torch.tensor(labels,dtype=torch.float32).view(-1,1)
-            inputs = torch.tensor(inputs, dtype=torch.float32).view(-1,1,6)
+        for inputs, targets  in train_loader:
+            targets = targets.view(-1,1)
+            inputs = inputs.view(-1,1,6)
 
             predictions = model(inputs)
             optimizer.zero_grad()
-            batch_loss = criterion(predictions, labels)
+            batch_loss = criterion(predictions, targets)
             batch_loss.backward()
             optimizer.step()
-            train_losses.append(batch_loss.item())
-        # ============================================
-        # validation mode mode
-        model.eval() 
+            all_batch_train_losses.append(batch_loss.item())
 
-        # mini_batch
+        epoch_train_loss = np.average(all_batch_train_losses)
+        # =================validation mode===========================
+        model.eval() 
         for j, v_data in enumerate(val_loader):
             inputs, labels = v_data
             labels = torch.tensor(labels,dtype=torch.float32).view(-1,1)
@@ -50,35 +48,36 @@ def training_validation(model,epoch_sum,train_loader,val_loader,learningRate,pat
 
             predictions = model(inputs) # the out put of the network
             batch_loss = criterion(predictions, labels)
-            val_losses.append(batch_loss.item())
+            all_batch_val_losses.append(batch_loss.item())
         
+        epoch_val_loss = np.average(all_batch_val_losses)
 
         # print training/validation statistics
         # calculate average loss over an epoch
-        train_loss = np.average(train_losses)
-        val_loss = np.average(val_losses)
-        wandb.log({"train_loss": train_loss,"val_loss":val_loss})
-        avg_train_losses.append(train_loss)
-        avg_val_losses.append(val_loss)
+        wandb.log({"train_loss": epoch_train_loss,"val_loss":epoch_val_loss})
+        all_epoch_train_losses.append(epoch_train_loss)
+        all_epoch_val_losses.append(epoch_val_loss)
 
         epoch_len = len(str(epoch_sum))
 
-        print_msg = (f'round:{index_of_main_cyle+1}:[{epoch:>{epoch_len}}/{epoch_sum::>{epoch_len}}]'+
-                     f'train_loss:{train_loss:.5f}' + ' '
-                     f'valid_loss:{val_loss:.5f}')
+        print_msg = (f'round:{exp_index+1}:[{epoch:>{epoch_len}}/{epoch_sum::>{epoch_len}}]'+
+                     f'train_loss:{epoch_train_loss:.5f}' + ' '
+                     f'valid_loss:{epoch_val_loss:.5f}')
         print(print_msg)
 
         # clear lists to track next epoch
-        train_losses = []
-        val_losses = []
+        all_batch_train_losses = []
+        all_batch_val_losses = []
 
         # early _stopping needs the validation loss to check if if has decreased
-        # and if it has, it will make a checkpoint of the current model
-        early_stopping(val_loss, model)
+        # and if it has, it will make a checkpoint of the current model. Note that early stopping will only store the model with the best validation loss in checkpoint.pt
+        early_stopping(epoch_val_loss, model)
         # when it reaches the requirements of stopping,early——stop will be set as True
         if early_stopping.early_stop:
             print("Early stopping")
             break
+
+    # time consumed in one experiment
     time_end = time.time()
     duaration  = time_end - time_start
     print("The training took %.2f"%(duaration/60)+ "mins.")
@@ -86,19 +85,21 @@ def training_validation(model,epoch_sum,train_loader,val_loader,learningRate,pat
     time_end = time.asctime(time.localtime(time_end))
     print("The starting time was ", time_start)
     print("The finishing time was ", time_end)
+
+
     # load the last checkpoint with the best model
     model.load_state_dict(torch.load('checkpoint.pt'))
-    if os.path.exists('./models') == False:
-        os.makedirs('./models')
+
+
+    if os.path.exists(model_folder_directory) == False:
+        os.makedirs(model_folder_directory)
     else:
         pass
-    torch.save(model.state_dict(),'models/model_params'+str(index_of_main_cyle)+'.pkl')
-    return model, avg_train_losses, avg_val_losses
 
-def change_best_model_name(index,model_filepath): # rename the document of the best model, in order of modularization
-    suffix = '.pkl'
-    for file in os.listdir(model_filepath):
-        if file.split('.')[0] == "model_params"+str(index):
-            new_name = file.replace(file,"best_model"+suffix)
-            os.rename(os.path.join(model_filepath, file), os.path.join(model_filepath, new_name))
-            break
+    # save the model with the best validation loss
+    save_model_time = time.strftime("%Y%m%d_%H%M%S")
+    model_name = 'model_params'+save_model_time+"_"+str(exp_index+1)
+    torch.save(model.state_dict(),model_folder_directory+'/'+model_name+'.pkl')
+
+
+    return model_name, model, all_epoch_train_losses, all_epoch_val_losses
