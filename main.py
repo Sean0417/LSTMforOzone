@@ -3,18 +3,16 @@ from dataprocess import data_split
 from dataprocess import prepare_dataloader
 from model import LSTM_Regression
 from train import training_validation
-from train import change_best_model_name
-import evaluation
+from evaluation import evaluation
 import argparse
-import plot
+from plot import plot_learning_curve
+from plot import plot_prediction_curve
 import numpy as np
 import wandb
-
+import os
 
 def main(args):
-
-    # 1.data preparation
-    print(args.is_train)
+    # data preparation
     x, y = sort_data(filepath=args.filepath,col=[8])
     x_train,y_train,x_val,y_val,x_test,y_test = data_split(x_data=x, y_data=y, train_percentage=args.training_percentage, validate_percentage=args.validate_percentage)
 
@@ -22,53 +20,64 @@ def main(args):
     val_loader = prepare_dataloader(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
     test_loader = prepare_dataloader(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
 
+    # wandb initialization
+    wandb.init(project='LSTMpredictOzone',
+            job_type="training",
+            reinit=True,
+            )
+    wandb.watch(model,log="all")
 
-    # 3. Model training
+
+    # Model training
     if args.is_train == True:
-        loss_cycle_validation_min = []
-        losses_train = []
-        losses_val =[]
-
-        for n in range(args.num_exps):
+        print("===================train and validation====================")
+        # experiments loop
+        for exp_idx in range(args.num_exps):
+            # model initialization
             model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
-            model, loss_train, loss_val = training_validation(model=model,
+            model_name, model, all_epoch_train_loss, all_epoch_val_loss = training_validation(model=model,
                                                             epoch_sum=args.num_of_epochs,
                                                             train_loader=train_loader,
                                                             val_loader=val_loader,
                                                             patience=args.patience,
                                                             learning_rate=args.learning_rate,
-                                                            index_of_main_cyle=n)
-            loss_cycle_validation_min.append(np.min(loss_val))
-            losses_train.append(loss_train)
-            losses_val.append(loss_val)
-            print("round"+str(n+1)+" has been done")
-        index = np.argmin(loss_cycle_validation_min) # argmin get the index of the minimum element of the array
-        change_best_model_name(index=index,model_filepath="./models")
-        loss_train = losses_train[index]
-        loss_val = losses_val[index]
-        # plot the training and validation loss curve
-        plot.plot_learning_curve(loss_train=loss_train,loss_val=loss_val)
+                                                            exp_index=exp_idx,
+                                                            model_folder_directory=args.model_folder_dir)
+            # plot the learning curve
+            plot_learning_curve(train_loss=all_epoch_train_loss,val_loss=all_epoch_val_loss,plot_folder_dir=args.plot_folder_dir,model_name=model_name)
+
+            print("round"+str(exp_idx+1)+" has been done")
+        
+
+    
     else:
+        # model initialization
         model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size)
         
     
     
     
-    # 4. Model evaluation
-    # wandb initialization
-    wandb.init(project='LSTMpredictOzone',
-            name='test',# name on the website
-            id="test",# name in the local log
-            job_type="training",
-            reinit=True,
-            config = {
-                    "architechture":"LSTM",
-                    "dataset":"Ozone",
-            }
-            )
-    labels, predictions,loss_test = evaluation.evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction)
-    plot.plot_prediction_curve(y=labels, y_predict=predictions,loss_test=loss_test)
+    # Model evaluation
+    # first set the best loss to infinity
+    best_test_loss= float('inf')
+    best_test_loss_model=''
+    targets_best = []
+    predictions_best = []
+    
+    print("============test================")
 
+    for file in os.listdir(args.model_folder_dir):
+        targets, predictions, test_loss = evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction, model_filepath=args.model_folder_dir+'/'+file)
+        if test_loss < best_test_loss:
+            best_test_loss = test_loss
+            best_test_loss_model = file.split('.')[0]
+            targets_best = targets
+            predictions_best =predictions
+        else:
+            pass
+
+    plot_prediction_curve(y=targets_best, y_predict=predictions_best,test_loss=best_test_loss,plot_folder_dir=args.plot_folder_dir)
+    print("The best model with least test loss so far in these experiments is "+best_test_loss_model)
 
 
 if __name__ == "__main__":
@@ -85,6 +94,8 @@ if __name__ == "__main__":
     parser.add_argument('--patience',type=int, default=10,required=True, help='patience of early Stopping')
     parser.add_argument('-es','--num_of_epochs',type=int,default=100,required=True,help = 'the sum of the epochs')
     parser.add_argument('--lossfunction',type=str, required=True, default='MSE',help="The type of the loss function.")
-
+    parser.add_argument('--model_folder_dir',type=str, required=True)
+    parser.add_argument('--test_model_path',type=str,help="when the experiments is only for testing, you need to assign which model to initialize")
+    parser.add_argument('--plot_folder_dir',type=str,required=True,help="the folder directory where plot results are stored")
     args = parser.parse_args()
     main(args=args)
