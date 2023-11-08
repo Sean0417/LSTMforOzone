@@ -12,7 +12,7 @@ class LSTM_Regression(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, _x):
-        x,_ = self.lstm(_x) #(x是输出维度为 seq*batch*hidden_size)
+        x,_ = self.lstm(_x) #(the output of x is seq*batch*hidden_size)
         s,b,h = x.shape
         x = x.view(s*b,h)
         x = self.fc(x)
