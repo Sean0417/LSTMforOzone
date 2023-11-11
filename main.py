@@ -1,5 +1,5 @@
 from dataprocess import sort_data
-from dataprocess import data_split
+from dataprocess import data_split_normalization
 from dataprocess import prepare_dataloader
 from model import LSTM_Regression
 from train import training_validation
@@ -15,7 +15,7 @@ from tqdm import tqdm
 def main(args):
     # data preparation
     x, y = sort_data(filepath=args.filepath,col=[8])
-    x_train,y_train,x_val,y_val,x_test,y_test = data_split(x_data=x, y_data=y, train_percentage=args.training_percentage, validate_percentage=args.validate_percentage)
+    x_train,y_train,x_val,y_val,x_test,y_test = data_split_normalization(x_data=x, y_data=y, train_percentage=args.training_percentage, validate_percentage=args.validate_percentage)
 
     train_loader = prepare_dataloader(x_data=x_train,y_data=y_train, batch_size=args.batch_size, shuffle=True)# train_loader
     val_loader = prepare_dataloader(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
