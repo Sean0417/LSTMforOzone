@@ -10,6 +10,7 @@ from plot import plot_prediction_curve
 import numpy as np
 import wandb
 import os
+from tqdm import tqdm
 
 def main(args):
     # data preparation
@@ -62,7 +63,7 @@ def main(args):
     
     print("============test================")
 
-    for file in os.listdir(args.model_folder_dir):
+    for file in tqdm(os.listdir(args.model_folder_dir),unit="model file"):
         targets, predictions, test_loss = evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction, model_filepath=args.model_folder_dir+'/'+file)
         if test_loss < best_test_loss:
             best_test_loss = test_loss
