@@ -12,7 +12,8 @@ patience=10 \
 num_of_epochs=100 \
 lossfunction="MSE" \
 model_folder_dir="./models" \
-plot_folder_dir="./pic"
+plot_folder_dir="./pic" \
+test_model_directory="model_params20231112_002801_2.pkl"
 if [ "$is_train" = true ]; then
    echo 'training, validation and test'
    python main.py --num_exps=$num_exps \
@@ -43,6 +44,7 @@ else
     --num_of_epochs=$num_of_epochs \
     --lossfunction=$lossfunction \
     --model_folder_dir=$model_folder_dir \
-    --plot_folder_dir=$plot_folder_dir
+    --plot_folder_dir=$plot_folder_dir \
+    --test_model_directory=$test_model_directory
 fi
 deactivate

@@ -55,26 +55,32 @@ def main(args):
     
     
     # Model evaluation
-    # first set the best loss to infinity
-    best_test_loss= float('inf')
-    best_test_loss_model=''
-    targets_best = []
-    predictions_best = []
-    
     print("============test================")
+    if args.is_train == True:
+        # first set the best loss to infinity
+        best_test_loss= float('inf')
+        best_test_loss_model=''
+        targets_best = []
+        predictions_best = []
+        
+        # use tqdm to beautify the output
+        for file in tqdm(os.listdir(args.model_folder_dir),unit="model file"):
+            targets, predictions, test_loss = evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction, model_filepath=args.model_folder_dir+'/'+file)
+            if test_loss < best_test_loss:
+                best_test_loss = test_loss
+                best_test_loss_model = file.split('.')[0]
+                targets_best = targets
+                predictions_best =predictions
+            else:
+                pass
 
-    for file in tqdm(os.listdir(args.model_folder_dir),unit="model file"):
-        targets, predictions, test_loss = evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction, model_filepath=args.model_folder_dir+'/'+file)
-        if test_loss < best_test_loss:
-            best_test_loss = test_loss
-            best_test_loss_model = file.split('.')[0]
-            targets_best = targets
-            predictions_best =predictions
-        else:
-            pass
-
-    plot_prediction_curve(y=targets_best, y_predict=predictions_best,test_loss=best_test_loss,plot_folder_dir=args.plot_folder_dir)
-    print("The best model with least test loss so far in these experiments is "+best_test_loss_model)
+        plot_prediction_curve(y=targets_best, y_predict=predictions_best,test_loss=best_test_loss,plot_folder_dir=args.plot_folder_dir,is_train=args.is_train)
+        print("The best model with least test loss so far in these experiments is "+best_test_loss_model)
+    # only test
+    else:
+            targets, predictions, test_loss = evaluation(model=model,test_loader=test_loader,lossfunction=args.lossfunction, model_filepath=args.model_folder_dir + "/" + args.test_model_directory)
+            plot_prediction_curve(y=targets, y_predict=predictions, test_loss=test_loss,plot_folder_dir=args.plot_folder_dir,is_train=args.is_train, test_model_directory=args.test_model_directory)
+            print("The prediction curve of " + args.test_model_directory + " has been created.")
 
 
 if __name__ == "__main__":
@@ -91,8 +97,8 @@ if __name__ == "__main__":
     parser.add_argument('--patience',type=int, default=10,required=True, help='patience of early Stopping')
     parser.add_argument('-es','--num_of_epochs',type=int,default=100,required=True,help = 'the sum of the epochs')
     parser.add_argument('--lossfunction',type=str, required=True, default='MSE',help="The type of the loss function.")
-    parser.add_argument('--model_folder_dir',type=str, required=True)
-    parser.add_argument('--test_model_path',type=str,help="when the experiments is only for testing, you need to assign which model to initialize")
+    parser.add_argument('--model_folder_dir',type=str, required=True,help="The directory of the model folder")
+    parser.add_argument('--test_model_directory',type=str,help="when the experiments is only for testing, you need to assign which model to initialize")
     parser.add_argument('--plot_folder_dir',type=str,required=True,help="the folder directory where plot results are stored")
     args = parser.parse_args()
     main(args=args)

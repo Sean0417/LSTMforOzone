@@ -19,16 +19,16 @@ def plot_learning_curve(train_loss, val_loss, plot_folder_dir, model_name):
     plt.grid(True)
 
     if os.path.exists(plot_folder_dir):
-        plt.savefig(plot_folder_dir+'/'+model_name+'.png',format='png',dpi= 200)
+        plt.savefig(plot_folder_dir+'/'+"learning_curve_"+model_name+'.png',format='png',dpi= 200)
     else:
         os.makedirs(plot_folder_dir)
-        plt.savefig(plot_folder_dir+'/'+model_name+'.png',format='png',dpi= 200)
+        plt.savefig(plot_folder_dir+'/'+"learning_curve_"+model_name+'.png',format='png',dpi= 200)
 
     # wandb.log({"best_train_validation_curve":wandb.Plotly(plt.gcf())}) # print the learning curve on wandb
     plt.close()
 
 
-def plot_prediction_curve(y, y_predict, test_loss,plot_folder_dir):
+def plot_prediction_curve(y, y_predict, test_loss,plot_folder_dir,is_train,test_model_directory=""):
     plt.figure()
     plt.plot(y[500:600], 'b', label='ground truth')
     plt.plot(y_predict[500:600],'r',label = 'prediction')
@@ -38,11 +38,18 @@ def plot_prediction_curve(y, y_predict, test_loss,plot_folder_dir):
     plt.xticks(np.arange(0, 100, step = 10))
     plt.legend(loc='best')
     
-    if os.path.exists(plot_folder_dir):
-        plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
+    if is_train == True:
+        if os.path.exists(plot_folder_dir):
+            plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
+        else:
+            os.makedirs(plot_folder_dir)
+            plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
     else:
-        os.makedirs(plot_folder_dir)
-        plt.savefig(plot_folder_dir+'/best_result.png',format='png',dpi=200)
+        if os.path.exists(plot_folder_dir):
+            plt.savefig(plot_folder_dir+'/'+"prediction_curve_"+test_model_directory.split('.')[0]+'.png',format='png',dpi=200)
+        else:
+            os.makedirs(plot_folder_dir)
+            plt.savefig(plot_folder_dir+'/'+"prediction_curve_"+test_model_directory.split('.')[0]+'.png',format='png',dpi=200)
 
     # wandb.log({"plot_prediction_curve":wandb.Plotly(plt.gcf())}) # print the plot of the prediction curve on wandb
     plt.close()
