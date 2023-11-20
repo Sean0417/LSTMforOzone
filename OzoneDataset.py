@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset # Dataset is an abstract class, can only be herited
 class OzoneDataset(Dataset):
-    def __init__(self,x_data,y_data) -> None:
+    def __init__(self,x_data,y_data) -> None: # x_data and y_data are numpy
  
         self.x_data = torch.from_numpy(x_data)
         self.y_data = torch.from_numpy(y_data)
