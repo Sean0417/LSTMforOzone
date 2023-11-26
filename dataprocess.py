@@ -44,8 +44,8 @@ def data_split_normalization(x_data, y_data, train_percentage, validate_percenta
      norm_test_x = min_max_normalize(x=test_x,max_x=max_train_x,min_x=min_train_x)
      norm_test_y = min_max_normalize(x=test_y,max_x=max_train_y,min_x=min_train_y)
 
-     # return train_x, train_y, validate_x, validate_y, test_x, test_y # np.array
-     return norm_train_x, norm_train_y, norm_val_x, norm_val_y, norm_test_x, norm_test_y
+     return train_x, train_y, validate_x, validate_y, test_x, test_y # np.array
+     # return norm_train_x, norm_train_y, norm_val_x, norm_val_y, norm_test_x, norm_test_y
 
 def get_min_max(x):
       min_x = np.min(x)

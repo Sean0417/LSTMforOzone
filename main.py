@@ -21,17 +21,18 @@ def main(args):
     val_loader = prepare_dataloader(x_data=x_val,y_data=y_val, batch_size=args.batch_size, shuffle=False) # validate_loader
     test_loader = prepare_dataloader(x_data=x_test,y_data=y_test,batch_size=1,shuffle=False)
 
-    # wandb initialization
-    wandb.init(project='LSTMpredictOzone',
-            job_type="training",
-            reinit=True,
-            )
+
 
     # Model training
     if args.is_train == True:
         print("===================train and validation====================")
         # experiments loop
         for exp_idx in range(args.num_exps):
+                # wandb initialization
+            wandb.init(project='LSTMpredictOzone',
+                    job_type="training",
+                    reinit=True,
+                    )
             # model initialization
             model = LSTM_Regression(input_size=args.input_size,hidden_size=args.hidden_size) # in every iteration we need to initialize the model in order to start randomly
             wandb.watch(model,log="all")

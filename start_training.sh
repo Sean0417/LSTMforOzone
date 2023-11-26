@@ -1,18 +1,18 @@
 source venv/bin/activate
-is_train=true \
-num_exps=2 \
-filepath=data/data.csv \
-learning_rate=0.01 \
-training_percentage=0.7 \
-validate_percentage=0.1 \
-batch_size=40 \
-input_size=6 \
-hidden_size=10 \
-patience=10 \
-num_of_epochs=100 \
-lossfunction="MSE" \
-model_folder_dir="./models" \
-plot_folder_dir="./pic" \
+is_train=true 
+num_exps=2 
+filepath=data/data.csv 
+learning_rate=0.01
+training_percentage=0.7
+validate_percentage=0.1
+batch_size=40
+input_size=6
+hidden_size=10
+patience=10
+num_of_epochs=100
+lossfunction="MSE" 
+model_folder_dir="./models" 
+plot_folder_dir="./pic" 
 test_model_directory="model_params20231112_002801_2.pkl"
 if [ "$is_train" = true ]; then
    echo 'training, validation and test'
